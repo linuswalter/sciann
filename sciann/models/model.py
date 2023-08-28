@@ -561,7 +561,7 @@ class SciModel(object):
             sci_callbacks.append(self._callbacks['adaptive_weights'])
 
         if adaptive_sample_weights:
-            if adaptive_sample_weights["method"]=="AdaptiveSampleWeight2"
+            if adaptive_sample_weights["method"]=="AdaptiveSampleWeight2":
                 # sample_weights = [K.variable(wi) for wi in sample_weights]
                 sci_callbacks.append(
                     AdaptiveSampleWeight2(

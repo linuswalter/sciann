@@ -560,10 +560,23 @@ class SciModel(object):
         elif 'adaptive_weights' in self._callbacks:
             sci_callbacks.append(self._callbacks['adaptive_weights'])
 
-        if adaptive_sample_weights:
+        if adaptive_sample_weights["method"]=="AdaptiveSampleWeight2":
             # sample_weights = [K.variable(wi) for wi in sample_weights]
             sci_callbacks.append(
                 AdaptiveSampleWeight2(
+                    self.model, data_generator=data_generator,
+                    types=[type(v).__name__ for v in self.constraints],
+                    **adaptive_sample_weights
+                )
+            )
+            # loss_gradients = NTKSW.eval_diag_ntk()
+            # sample_weights = NTKSW.eval_sample_weights(loss_gradients)
+            self._callbacks['adaptive_sample_weights'] = sci_callbacks[-1]
+
+        elif adaptive_sample_weights["method"]=="AdaptiveSampleWeight":
+            # sample_weights = [K.variable(wi) for wi in sample_weights]
+            sci_callbacks.append(
+                AdaptiveSampleWeight(
                     self.model, data_generator=data_generator,
                     types=[type(v).__name__ for v in self.constraints],
                     **adaptive_sample_weights

@@ -815,8 +815,10 @@ class SciModel(object):
             else:
                 wei = np.zeros(num_sample) + default_zero_weight
                 wei[ids] = global_weights[ids]
-                wei[ids] *= sum(global_weights)/sum(wei[ids])
+                # the following line equalizes the weights with regard to the amount of collocation points
+                # wei[ids] *= sum(global_weights)/sum(wei[ids]) #test
             weis.append(wei)
+
             # preparing targets.
             if isinstance(ys[-1], np.ndarray):
                 if not (ys[-1].shape[1:] == k.backend.int_shape(yc)[1:]):

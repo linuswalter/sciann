@@ -495,7 +495,7 @@ class SciModel(object):
             k.callbacks.EarlyStopping(monitor="loss", mode='auto', verbose=1,
                                       patience=stop_after, min_delta=1e-9),
             k.callbacks.TerminateOnNaN(),
-            EarlyStoppingByLossVal(stop_loss_value),
+            # EarlyStoppingByLossVal(stop_loss_value),
             EarlyStoppingByLearningRate(stop_lr_value),
             EpochTime()
         ]

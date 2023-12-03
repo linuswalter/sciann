@@ -561,25 +561,14 @@ class SciModel(object):
             sci_callbacks.append(self._callbacks['adaptive_weights'])
 
         if adaptive_sample_weights:
-            if adaptive_sample_weights["method"]=="AdaptiveSampleWeight2":
-                # sample_weights = [K.variable(wi) for wi in sample_weights]
-                sci_callbacks.append(
-                    AdaptiveSampleWeight2(
-                        self.model, data_generator=data_generator,
-                        types=[type(v).__name__ for v in self.constraints],
-                        **adaptive_sample_weights
-                    )
+            # sample_weights = [K.variable(wi) for wi in sample_weights]
+            sci_callbacks.append(
+                AdaptiveSampleWeight2(
+                    self.model, data_generator=data_generator,
+                    types=[type(v).__name__ for v in self.constraints],
+                    **adaptive_sample_weights
                 )
-
-            elif adaptive_sample_weights["method"]=="AdaptiveSampleWeight":
-                # sample_weights = [K.variable(wi) for wi in sample_weights]
-                sci_callbacks.append(
-                    AdaptiveSampleWeight(
-                        self.model, data_generator=data_generator,
-                        types=[type(v).__name__ for v in self.constraints],
-                        **adaptive_sample_weights
-                    )
-                )
+            )
             # loss_gradients = NTKSW.eval_diag_ntk()
             # sample_weights = NTKSW.eval_sample_weights(loss_gradients)
             self._callbacks['adaptive_sample_weights'] = sci_callbacks[-1]
@@ -642,6 +631,40 @@ class SciModel(object):
             validation_data=data_generator_validation,
             **kwargs
         )
+
+        # =============================================================================
+        # output all loss on collocation points
+        # =============================================================================
+        self.data_generator=data_generator
+        weights = self.data_generator._sample_weights
+
+        # self.loss_func = lambda t, p: np.mean((t - p)**2, axis=-1) #mse
+        self.loss_func = lambda t, p: np.mean(abs(t - p), axis=-1) #mae
+
+        self.losses = []
+        for i in range(len(self.model.outputs)):
+            # fixed batch size
+            loss_i = K.function(self.model.inputs, self.model.outputs[i])
+            self.losses.append(loss_i)
+        print("self.losses") #test
+        print(self.losses) #test
+
+        self.losses_cp = []
+        for i, (loss, wi) in enumerate(zip(self.losses, weights)):
+            ids = wi > 0
+            inputs = [x[ids, :] for x in self.data_generator._inputs]
+            trues = self.data_generator._outputs[i][ids]
+            # eval loss
+            loss_i = np.zeros_like(wi)
+            loss_i[ids] = self.loss_func(trues, loss(inputs))
+            self.losses_cp.append(loss_i)
+        print("Total self.losses_cp of each CP:") #test
+        print("self.losses_cp = {}".format(self.losses_cp)) #test
+
+
+        # =============================================================================
+        #
+        # =============================================================================
 
         if save_weights is not None:
             if 'best' not in save_weights.keys() or \

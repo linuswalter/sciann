@@ -1723,7 +1723,7 @@ class AdaptiveSampleWeight(Callback):
                  hessian=False, types=None, **kwargs):
         super(AdaptiveSampleWeight, self).__init__()
         # generate samples. 
-        inputs, targets, weights = data_generator.get_grid()
+        inputs, targets, weights = data_generator.get_data()
         # limit number of samples for performance concerns.
         self.inputs = inputs
         self.targets = targets
@@ -1807,7 +1807,6 @@ class AdaptiveSampleWeight2(Callback):
         elif len(args) > 0:
             raise ValueError
         return kwargs
-
 
 def setup_adaptive_weight_callback(adaptive_weights, model, constraints, data_generator):
     """ Prepare adaptive_weight callback.

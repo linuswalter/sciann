@@ -134,6 +134,9 @@ class GeneratorWrapper(Sequence):
     def get_data(self):
         return self._inputs, self._outputs, self._sample_weights
 
+    def get_grid(self):
+        return self._inputs
+
     def _reshuffle(self):
         if self._num_batches > 1 and self._shuffle:
             self._ids = np.random.choice(self._size, self._size, replace=False)
@@ -141,6 +144,11 @@ class GeneratorWrapper(Sequence):
     def get_config(self):
         config = super(GeneratorWrapper, self).get_config()
         return config
+
+    def set_sample_weights(self):
+        return self._sample_weights
+
+
 
 
 class ScipyOptimizer(object):

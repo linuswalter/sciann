@@ -496,7 +496,7 @@ class SciModel(object):
                                       patience=stop_after, min_delta=1e-9),
             k.callbacks.TerminateOnNaN(),
             # EarlyStoppingByLossVal(stop_loss_value),
-            EarlyStoppingByLearningRate(stop_lr_value),
+            # EarlyStoppingByLearningRate(stop_lr_value),
             EpochTime()
         ]
 

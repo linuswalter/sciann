@@ -145,6 +145,11 @@ class GeneratorWrapper(Sequence):
         config = super(GeneratorWrapper, self).get_config()
         return config
 
+    def set_sample_weights(self):
+        return self._sample_weights
+
+
+
 
 class ScipyOptimizer(object):
     """
